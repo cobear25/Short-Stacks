@@ -77,6 +77,7 @@ public class Box : MonoBehaviour
         spriteRenderer.enabled = false;
         ps.Play();
         stack.RemoveBox(this);
+        stack.CheckRules();
         Destroy(gameObject, 1);
     }
 

@@ -21,7 +21,7 @@ public class Stack: MonoBehaviour
         [StackRequirementType.lightBrown] = 0,
         [StackRequirementType.yellow] = 0,
         [StackRequirementType.purple] = 0,
-        [StackRequirementType.pink] = 0
+        // [StackRequirementType.pink] = 0
     };
 
     public Stack(GameObject boxPrefab, int size, Color[] colors, GameController gameController) {
@@ -106,9 +106,9 @@ public class Stack: MonoBehaviour
             case BoxColor.purple:
                 requirementsMet[StackRequirementType.purple] -= 1;
                 break;
-            case BoxColor.pink:
-                requirementsMet[StackRequirementType.pink] -= 1;
-                break;
+            // case BoxColor.pink:
+            //     requirementsMet[StackRequirementType.pink] -= 1;
+            //     break;
         }
         MeetsRequirements(requirements);
     }
@@ -141,9 +141,9 @@ public class Stack: MonoBehaviour
                 case BoxColor.purple:
                     requirementsMet[StackRequirementType.purple] += 1;
                     break;
-                case BoxColor.pink:
-                    requirementsMet[StackRequirementType.pink] += 1;
-                    break;
+                // case BoxColor.pink:
+                //     requirementsMet[StackRequirementType.pink] += 1;
+                //     break;
             }
         }
     }
@@ -170,7 +170,7 @@ public class Stack: MonoBehaviour
     public void CheckRules() {
         gameController.ClearBrokenRules();
         // go up to the second to last box because the last one has nothing to check after it
-        var rulesBroken = new int[] {0, 0, 0};
+        var rulesBroken = new int[] {0, 0, 0, 0};
         for (int i = 0; i < boxes.Count - 1; i++)
         {
             Box box = boxes[i];

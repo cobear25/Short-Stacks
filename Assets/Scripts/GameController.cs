@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class GameController : MonoBehaviour
@@ -9,27 +10,47 @@ public class GameController : MonoBehaviour
     public GameObject boxPrefab;
     public GameObject brokenRuleTextPrefab;
     public Color[] boxColors;
+    public Color[] boxColors2;
 
     public TextMeshProUGUI totalMoneyText;
     public TextMeshProUGUI plusMoneyText;
     public TextMeshProUGUI minusMoneyText;
 
+    public TextMeshPro tutorialText;
+    public GameObject stackText;
     public TextMeshPro req1Text;
     public TextMeshPro req2Text;
     public TextMeshPro req3Text;
+    public TextMeshPro req4Text;
     public TextMeshPro req1OverflowText;
     public TextMeshPro req2OverflowText;
     public TextMeshPro req3OverflowText;
+    public TextMeshPro req4OverflowText;
     public TextMeshPro rule1Text;
     public TextMeshPro rule2Text;
     public TextMeshPro rule3Text;
+    public TextMeshPro rule4Text;
+    public TextMeshPro rule1Dash;
+    public TextMeshPro rule2Dash;
+    public TextMeshPro rule3Dash;
+    public TextMeshPro rule4Dash;
+
+    public TextMeshProUGUI doneButtonText;
 
     public GameObject slash1;
     public GameObject slash2;
     public GameObject slash3;
+    public GameObject slash4;
     public GameObject check1;
     public GameObject check2;
     public GameObject check3;
+    public GameObject check4;
+    public GameObject ruleCheck1;
+    public GameObject ruleCheck2;
+    public GameObject ruleCheck3;
+    public GameObject ruleCheck4;
+
+    public GameObject gameOverText;
 
     List<GameObject> brokenRuleTextList = new List<GameObject>();
     List<Transform> brokenRuleBoxTops = new List<Transform>();
@@ -40,19 +61,29 @@ public class GameController : MonoBehaviour
     int req1PlusMoney = 0;
     int req2PlusMoney = 0;
     int req3PlusMoney = 0;
+    int req4PlusMoney = 0;
     int req1MinusMoney = 0;
     int req2MinusMoney = 0;
     int req3MinusMoney = 0;
+    int req4MinusMoney = 0;
     int rulesBroken = 0;
+
+    int tutorialStep = 1;
+
+    public int requirementCount = 2;
+    public int ruleCount = 2;
+    public int stackSize = 8;
+    public int stackNumber = 0;
 
     Stack currentStack;
     public List<Box> boxList;
     // Start is called before the first frame update
     void Start()
     {
-        UpdateMoneyText();
+        Application.targetFrameRate = 60;
+        // UpdateMoneyText();
         currentStack = new Stack(boxPrefab, 1, boxColors, this);
-        NextStack();
+        // NextStack();
     }
 
     IEnumerator PlaceBoxes(List<Box> boxes)
@@ -74,11 +105,15 @@ public class GameController : MonoBehaviour
     }
 
     void UpdateMoneyText() {
-        plusMoney = req1PlusMoney + req2PlusMoney + req3PlusMoney;
-        minusMoney = (rulesBroken * 5) + req1MinusMoney + req2MinusMoney + req3MinusMoney;
+        plusMoney = req1PlusMoney + req2PlusMoney + req3PlusMoney + req4PlusMoney;
+        minusMoney = (rulesBroken * 5) + req1MinusMoney + req2MinusMoney + req3MinusMoney + req4MinusMoney;
         totalMoneyText.text = $"${totalMoney}";
         plusMoneyText.text = $"+${plusMoney}";
         minusMoneyText.text = $"-${minusMoney}";
+        if (stackNumber > 5 || stackNumber < 1) {
+            plusMoneyText.text = "";
+            minusMoneyText.text = "";
+        }
     }
 
     StackRequirement GenerateRequirement() {
@@ -165,17 +200,52 @@ public class GameController : MonoBehaviour
     }
     
     public void WhichRulesBroken(int[] brokenRules) {
-        rule1Text.color = Color.black;
-        rule2Text.color = Color.black;
-        rule3Text.color = Color.black;
-        if (brokenRules[0] == 1) {
-            rule1Text.color = Color.red;
+        for (int i = 0; i < brokenRules.Length; i++)
+        {
+            if (i < ruleCount) {
+                RuleBroken(i, brokenRules[i] == 1);
+            }
         }
-        if (brokenRules[1] == 1) {
-            rule2Text.color = Color.red;
-        }
-        if (brokenRules[2] == 1) {
-            rule3Text.color = Color.red;
+    }
+
+    void RuleBroken(int ruleNumber, bool isBroken) {
+        switch (ruleNumber) {
+            case 0:
+                if (isBroken) {
+                    rule1Text.color = Color.red;
+                    ruleCheck1.SetActive(false);
+                } else {
+                    rule1Text.color = Color.black;
+                    ruleCheck1.SetActive(true);
+                }
+                break;
+            case 1:
+                if (isBroken) {
+                    rule2Text.color = Color.red;
+                    ruleCheck2.SetActive(false);
+                } else {
+                    rule2Text.color = Color.black;
+                    ruleCheck2.SetActive(true);
+                }
+                break;
+            case 2:
+                if (isBroken) {
+                    rule3Text.color = Color.red;
+                    ruleCheck3.SetActive(false);
+                } else {
+                    rule3Text.color = Color.black;
+                    ruleCheck3.SetActive(true);
+                }
+                break;
+            case 3:
+                if (isBroken) {
+                    rule4Text.color = Color.red;
+                    ruleCheck4.SetActive(false);
+                } else {
+                    rule4Text.color = Color.black;
+                    ruleCheck4.SetActive(true);
+                }
+                break;
         }
     }
 
@@ -203,11 +273,13 @@ public class GameController : MonoBehaviour
     public void RequirementsMet(int reqNumber, int met, int outOf, int extras) {
         switch (reqNumber) {
             case 1:
-                req1PlusMoney = met * 5;
                 req1MinusMoney = extras;
                 if (met < outOf) {
                     slash1.SetActive(true);
+                    req1MinusMoney = 5;
+                    req1PlusMoney = 0;
                 } else {
+                    req1PlusMoney = met * 5;
                     slash1.SetActive(false);
                 }
                 if (met == outOf && extras <= 0) {
@@ -222,11 +294,13 @@ public class GameController : MonoBehaviour
                 }
                 break;
             case 2:
-                req2PlusMoney = met * 5;
                 req2MinusMoney = extras;
                 if (met < outOf) {
                     slash2.SetActive(true);
+                    req2MinusMoney = 5;
+                    req2PlusMoney = 0;
                 } else {
+                    req2PlusMoney = met * 5;
                     slash2.SetActive(false);
                 }
                 if (met == outOf && extras <= 0) {
@@ -241,11 +315,13 @@ public class GameController : MonoBehaviour
                 }
                 break;
             case 3:
-                req3PlusMoney = met * 5;
                 req3MinusMoney = extras;
                 if (met < outOf) {
                     slash3.SetActive(true);
+                    req3MinusMoney = 5;
+                    req3PlusMoney = 0;
                 } else {
+                    req3PlusMoney = met * 5;
                     slash3.SetActive(false);
                 }
                 if (met == outOf && extras <= 0) {
@@ -257,6 +333,27 @@ public class GameController : MonoBehaviour
                     req3OverflowText.text = $"{met + extras}/";
                 } else {
                     req3OverflowText.text = "";
+                }
+                break;
+            case 4:
+                req4MinusMoney = extras;
+                if (met < outOf) {
+                    slash4.SetActive(true);
+                    req4MinusMoney = 5;
+                    req4PlusMoney = 0;
+                } else {
+                    req4PlusMoney = met * 5;
+                    slash4.SetActive(false);
+                }
+                if (met == outOf && extras <= 0) {
+                    check4.SetActive(true);
+                } else {
+                    check4.SetActive(false);
+                }
+                if (extras > 0 || met < outOf) {
+                    req4OverflowText.text = $"{met + extras}/";
+                } else {
+                    req4OverflowText.text = "";
                 }
                 break;
         }
@@ -272,9 +369,9 @@ public class GameController : MonoBehaviour
         {
             box.Pop();
         }
-        currentStack = new Stack(boxPrefab, 15, boxColors, this);
+        currentStack = new Stack(boxPrefab, stackSize, boxColors, this);
         var requirementList = new List<StackRequirement>();
-        while (requirementList.Count < 3) {
+        while (requirementList.Count < requirementCount) {
             var req = GenerateRequirement();
             var isUnique = true;
             foreach (var requirement in requirementList)
@@ -290,7 +387,7 @@ public class GameController : MonoBehaviour
         }
         // each rule is just that a certain requirement type doesn't touch
         var ruleList = new List<StackRequirementType>();
-        while (ruleList.Count < 3) {
+        while (ruleList.Count < ruleCount) {
             var rule = (StackRequirementType)Random.Range(0, 8);
             var isUnique = true;
             foreach (var r in ruleList)
@@ -305,12 +402,119 @@ public class GameController : MonoBehaviour
         }
         currentStack.Create(requirementList.ToArray(), ruleList.ToArray());
         StartCoroutine(PlaceBoxes(currentStack.boxes));
-        req1Text.text = TextForRequirement(requirementList[0]);
-        req2Text.text = TextForRequirement(requirementList[1]);
-        req3Text.text = TextForRequirement(requirementList[2]);
+        for (int i = 0; i < requirementList.Count; i++)
+        {
+            switch (i) {
+                case 0:
+                    req1Text.text = TextForRequirement(requirementList[i]);
+                    break;
+                case 1:
+                    req2Text.text = TextForRequirement(requirementList[i]);
+                    break;
+                case 2:
+                    req3Text.text = TextForRequirement(requirementList[i]);
+                    break;
+                case 3:
+                    req4Text.text = TextForRequirement(requirementList[i]);
+                    break;
+            }
+        }
+        for (int i = 0; i < ruleList.Count; i++)
+        {
+            switch (i) {
+                case 0:
+                    rule1Text.text = TextForRule(ruleList[i]);
+                    rule1Dash.text = "-";
+                    break;
+                case 1:
+                    rule2Text.text = TextForRule(ruleList[i]);
+                    rule2Dash.text = "-";
+                    break;
+                case 2:
+                    rule3Text.text = TextForRule(ruleList[i]);
+                    rule3Dash.text = "-";
+                    break;
+                case 3:
+                    rule4Text.text = TextForRule(ruleList[i]);
+                    rule4Dash.text = "-";
+                    break;
+            }
+        }
+    }
 
-        rule1Text.text = TextForRule(ruleList[0]);
-        rule2Text.text = TextForRule(ruleList[1]);
-        rule3Text.text = TextForRule(ruleList[2]);
+    public void NextTutorialStep() {
+        if (tutorialStep == 1) {
+            tutorialText.text = "It's simple enough, just click on a box to get rid of it. Go on, click away.";
+            currentStack = new Stack(boxPrefab, stackSize, boxColors, this);
+            currentStack.Create(new StackRequirement[]{}, new StackRequirementType[]{});
+            StartCoroutine(PlaceBoxes(currentStack.boxes));
+        } else if (tutorialStep == 2) {
+            tutorialText.text = "Ok, THAT'S ENOUGH. You're costing me money. I've got some special requirements for these stacks and I want you to follow what I say exactly.";
+        } else if (tutorialStep == 3) {
+            tutorialText.text = "I'm going to give you a set of Requirements to meet and a set of Rules to follow. You'll earn $5 for each requirement met, but I'll dock you $1 for each one over the requirement, and dock you $5 if you go too low. I'll also dock you $5 for each rule broken.";
+            doneButtonText.text = "Go";
+        } else if (tutorialStep == 4) {
+            doneButtonText.text = "Done";
+            stackNumber = 1;
+            stackText.SetActive(true);
+            tutorialText.gameObject.SetActive(false);
+            UpdateMoneyText();
+            NextStack();
+        }
+
+        tutorialStep++;
+    }
+    
+    public void SubmitStack() {
+        switch (stackNumber) {
+            case 0:
+                NextTutorialStep();
+                break;
+            case 1:
+                requirementCount = 2;
+                ruleCount = 3;
+                stackNumber++;
+                stackSize = 10;
+                NextStack();
+                break;
+            case 2:
+                requirementCount = 3;
+                ruleCount = 3;
+                stackNumber++;
+                stackSize = 12;
+                NextStack();
+                break;
+            case 3:
+                requirementCount = 3;
+                ruleCount = 4;
+                stackNumber++;
+                stackSize = 14;
+                NextStack();
+                break;
+            case 4:
+                requirementCount = 4;
+                ruleCount = 4;
+                stackNumber++;
+                stackSize = 16;
+                NextStack();
+                break;
+            case 5:
+                // done
+                requirementCount = 0;
+                ruleCount = 0;
+                stackSize = 0;
+                doneButtonText.text = "New Game";
+                stackText.SetActive(false);
+                plusMoneyText.text = "";
+                minusMoneyText.text = "";
+                stackNumber++;
+                gameOverText.SetActive(true);
+                NextStack();
+                break;
+            case 6:
+                // new game
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                break;
+        }
     }
 }
