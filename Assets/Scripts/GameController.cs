@@ -16,6 +16,7 @@ public class GameController : MonoBehaviour
     public TextMeshProUGUI plusMoneyText;
     public TextMeshProUGUI minusMoneyText;
 
+    public GameObject skipTutorialButton;
     public TextMeshPro tutorialText;
     public GameObject stackText;
     public TextMeshPro req1Text;
@@ -72,7 +73,7 @@ public class GameController : MonoBehaviour
 
     public int requirementCount = 2;
     public int ruleCount = 2;
-    public int stackSize = 8;
+    public int stackSize = 10;
     public int stackNumber = 0;
 
     Stack currentStack;
@@ -113,6 +114,9 @@ public class GameController : MonoBehaviour
         if (stackNumber > 5 || stackNumber < 1) {
             plusMoneyText.text = "";
             minusMoneyText.text = "";
+        }
+        if (stackNumber < 1) {
+            totalMoneyText.text = "";
         }
     }
 
@@ -273,7 +277,7 @@ public class GameController : MonoBehaviour
     public void RequirementsMet(int reqNumber, int met, int outOf, int extras) {
         switch (reqNumber) {
             case 1:
-                req1MinusMoney = extras;
+                req1MinusMoney = extras * 2;
                 if (met < outOf) {
                     slash1.SetActive(true);
                     req1MinusMoney = 5;
@@ -294,7 +298,7 @@ public class GameController : MonoBehaviour
                 }
                 break;
             case 2:
-                req2MinusMoney = extras;
+                req2MinusMoney = extras * 2;
                 if (met < outOf) {
                     slash2.SetActive(true);
                     req2MinusMoney = 5;
@@ -315,7 +319,7 @@ public class GameController : MonoBehaviour
                 }
                 break;
             case 3:
-                req3MinusMoney = extras;
+                req3MinusMoney = extras * 2;
                 if (met < outOf) {
                     slash3.SetActive(true);
                     req3MinusMoney = 5;
@@ -336,7 +340,7 @@ public class GameController : MonoBehaviour
                 }
                 break;
             case 4:
-                req4MinusMoney = extras;
+                req4MinusMoney = extras * 2;
                 if (met < outOf) {
                     slash4.SetActive(true);
                     req4MinusMoney = 5;
@@ -451,13 +455,14 @@ public class GameController : MonoBehaviour
         } else if (tutorialStep == 2) {
             tutorialText.text = "Ok, THAT'S ENOUGH. You're costing me money. I've got some special requirements for these stacks and I want you to follow what I say exactly.";
         } else if (tutorialStep == 3) {
-            tutorialText.text = "I'm going to give you a set of Requirements to meet and a set of Rules to follow. You'll earn $5 for each requirement met, but I'll dock you $1 for each one over the requirement, and dock you $5 if you go too low. I'll also dock you $5 for each rule broken.";
+            tutorialText.text = "I'm going to give you a set of Requirements to meet and a set of Rules to follow. You'll earn $5 for each requirement met, but I'll dock you $2 for each one over the requirement, and dock you $5 if you go too low. I'll also dock you $5 for each rule broken.";
             doneButtonText.text = "Go";
         } else if (tutorialStep == 4) {
             doneButtonText.text = "Done";
             stackNumber = 1;
             stackText.SetActive(true);
             tutorialText.gameObject.SetActive(false);
+            skipTutorialButton.SetActive(false);
             UpdateMoneyText();
             NextStack();
         }
@@ -474,28 +479,28 @@ public class GameController : MonoBehaviour
                 requirementCount = 2;
                 ruleCount = 3;
                 stackNumber++;
-                stackSize = 10;
+                stackSize = 12;
                 NextStack();
                 break;
             case 2:
                 requirementCount = 3;
                 ruleCount = 3;
                 stackNumber++;
-                stackSize = 12;
+                stackSize = 14;
                 NextStack();
                 break;
             case 3:
                 requirementCount = 3;
                 ruleCount = 4;
                 stackNumber++;
-                stackSize = 14;
+                stackSize = 16;
                 NextStack();
                 break;
             case 4:
                 requirementCount = 4;
                 ruleCount = 4;
                 stackNumber++;
-                stackSize = 16;
+                stackSize = 18;
                 NextStack();
                 break;
             case 5:
@@ -516,5 +521,15 @@ public class GameController : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
                 break;
         }
+    }
+
+    public void SkipTutorial() {
+        doneButtonText.text = "Done";
+        stackNumber = 1;
+        stackText.SetActive(true);
+        tutorialText.gameObject.SetActive(false);
+        skipTutorialButton.SetActive(false);
+        UpdateMoneyText();
+        NextStack();
     }
 }
