@@ -18,6 +18,7 @@ public class GameController : MonoBehaviour
 
     public GameObject skipTutorialButton;
     public TextMeshPro tutorialText;
+    public GameObject doneButton;
     public GameObject stackText;
     public TextMeshPro req1Text;
     public TextMeshPro req2Text;
@@ -70,11 +71,14 @@ public class GameController : MonoBehaviour
     int rulesBroken = 0;
 
     int tutorialStep = 1;
+    int boxesRemoved = 0;
 
     public int requirementCount = 2;
     public int ruleCount = 2;
     public int stackSize = 10;
     public int stackNumber = 0;
+
+    AutoText tutorialAutoText;
 
     Stack currentStack;
     public List<Box> boxList;
@@ -82,9 +86,9 @@ public class GameController : MonoBehaviour
     void Start()
     {
         Application.targetFrameRate = 60;
-        // UpdateMoneyText();
         currentStack = new Stack(boxPrefab, 1, boxColors, this);
-        // NextStack();
+        tutorialAutoText = tutorialText.GetComponent<AutoText>();
+        tutorialAutoText.TypeText("HEY YOU. Yeah, you with the face. Wanna make some dough? I've got some stacks of boxes here that I need taken care of. They're too tall and I'll pay you to sort them out a bit.", NoOp);
     }
 
     IEnumerator PlaceBoxes(List<Box> boxes)
@@ -97,6 +101,9 @@ public class GameController : MonoBehaviour
             box.transform.position = new Vector2(1, y);
             y += 1.5f;
         }
+    }
+
+    void NoOp() {
     }
 
     // Update is called once per frame
@@ -448,14 +455,14 @@ public class GameController : MonoBehaviour
 
     public void NextTutorialStep() {
         if (tutorialStep == 1) {
-            tutorialText.text = "It's simple enough, just click on a box to get rid of it. Go on, click away.";
+            tutorialAutoText.TypeText("It's simple enough, just click on a box to get rid of it. Go on, click away.", NoOp);
             currentStack = new Stack(boxPrefab, stackSize, boxColors, this);
             currentStack.Create(new StackRequirement[]{}, new StackRequirementType[]{});
             StartCoroutine(PlaceBoxes(currentStack.boxes));
+            doneButton.SetActive(false);
         } else if (tutorialStep == 2) {
-            tutorialText.text = "Ok, THAT'S ENOUGH. You're costing me money. I've got some special requirements for these stacks and I want you to follow what I say exactly.";
         } else if (tutorialStep == 3) {
-            tutorialText.text = "I'm going to give you a set of Requirements to meet and a set of Rules to follow. You'll earn $5 for each requirement met, but I'll dock you $2 for each one over the requirement, and dock you $5 if you go too low. I'll also dock you $5 for each rule broken.";
+            tutorialAutoText.TypeText("I'm going to give you a set of Requirements to meet and a set of Rules to follow. You'll earn $5 for each requirement met, but I'll dock you $2 for each one over the requirement, and dock you $5 if you go too low. I'll also dock you $5 for each rule broken.", NoOp);
             doneButtonText.text = "Go";
         } else if (tutorialStep == 4) {
             doneButtonText.text = "Done";
@@ -531,5 +538,14 @@ public class GameController : MonoBehaviour
         skipTutorialButton.SetActive(false);
         UpdateMoneyText();
         NextStack();
+    }
+
+    public void BoxRemoved() {
+        boxesRemoved++;
+        if (boxesRemoved == 3 && tutorialStep == 2) {
+            tutorialAutoText.TypeText("Ok, THAT'S ENOUGH. You're costing me money. I've got some special requirements for these stacks and I want you to follow what I say exactly.", NoOp);
+            doneButton.SetActive(true);
+            tutorialStep++;
+        }
     }
 }

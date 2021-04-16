@@ -10,6 +10,7 @@ public class Box : MonoBehaviour
     public Stack stack;
     public Rigidbody2D rigidbody2d;
     public Transform boxTop;
+    public AudioSource audio;
 
     private BoxColor _color;
     public BoxColor color {
@@ -73,6 +74,7 @@ public class Box : MonoBehaviour
     }
 
     public void Pop() {
+        audio.Play();
         col2d.enabled = false;
         spriteRenderer.enabled = false;
         ps.Play();

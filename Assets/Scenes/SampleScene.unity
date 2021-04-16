@@ -523,6 +523,7 @@ MonoBehaviour:
   minusMoneyText: {fileID: 1754684315}
   skipTutorialButton: {fileID: 1575040097}
   tutorialText: {fileID: 1963251196}
+  doneButton: {fileID: 1964827683}
   stackText: {fileID: 521629957}
   req1Text: {fileID: 1321869798}
   req2Text: {fileID: 1051764000}
@@ -4299,7 +4300,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -14.900024}
+  m_AnchoredPosition: {x: 0, y: -14.899902}
   m_SizeDelta: {x: 319.77, y: 80}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1575040099
@@ -5843,6 +5844,7 @@ GameObject:
   - component: {fileID: 1963251195}
   - component: {fileID: 1963251197}
   - component: {fileID: 1963251196}
+  - component: {fileID: 1963251198}
   m_Layer: 0
   m_Name: TutorialText
   m_TagString: Untagged
@@ -5889,11 +5891,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'HEY YOU. Yeah, you with the face. Wanna make some dough? I''ve got some
-    stacks of boxes here that I need taken care of. They''re too tall and I''ll pay
-    you to sort them out a bit.
-
-'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee9f4714dde0f45c78597d01d9d56805, type: 2}
   m_sharedMaterial: {fileID: 1670593382563066796, guid: ee9f4714dde0f45c78597d01d9d56805, type: 2}
@@ -6005,6 +6003,19 @@ MeshRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 5
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1963251198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1963251194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f3d01c59c951496193444f0207044ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audio: {fileID: 0}
 --- !u!1 &1964827683
 GameObject:
   m_ObjectHideFlags: 0

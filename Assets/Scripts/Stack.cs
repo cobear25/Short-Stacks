@@ -111,6 +111,7 @@ public class Stack: MonoBehaviour
             //     break;
         }
         MeetsRequirements(requirements);
+        gameController.BoxRemoved();
     }
 
     void PopulateRequirementsMet() {
