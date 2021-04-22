@@ -19,6 +19,7 @@ public class GameController : MonoBehaviour
     public GameObject skipTutorialButton;
     public TextMeshPro tutorialText;
     public GameObject doneButton;
+    public GameObject undoButton;
     public GameObject stackText;
     public TextMeshPro req1Text;
     public TextMeshPro req2Text;
@@ -88,6 +89,10 @@ public class GameController : MonoBehaviour
         Application.targetFrameRate = 60;
         currentStack = new Stack(boxPrefab, 1, boxColors, this);
         tutorialAutoText = tutorialText.GetComponent<AutoText>();
+        Invoke("StartTutorial", 1);
+    }
+
+    void StartTutorial() {
         tutorialAutoText.TypeText("HEY YOU. Yeah, you with the face. Wanna make some dough? I've got some stacks of boxes here that I need taken care of. They're too tall and I'll pay you to sort them out a bit.", NoOp);
     }
 
@@ -451,6 +456,7 @@ public class GameController : MonoBehaviour
                     break;
             }
         }
+        undoButton.SetActive(false);
     }
 
     public void NextTutorialStep() {
@@ -546,6 +552,22 @@ public class GameController : MonoBehaviour
             tutorialAutoText.TypeText("Ok, THAT'S ENOUGH. You're costing me money. I've got some special requirements for these stacks and I want you to follow what I say exactly.", NoOp);
             doneButton.SetActive(true);
             tutorialStep++;
+        }
+        if (stackNumber > 0) {
+            undoButton.SetActive(true);
+        }
+    }
+
+    public void UndoButtonTapped() {
+        currentStack.Undo();
+        Invoke("FixGravity", 0.5f);
+        undoButton.SetActive(false);
+    }
+
+    void FixGravity() {
+        foreach (var box in currentStack.boxes)
+        {
+            box.rigidbody2d.gravityScale = 1; 
         }
     }
 }

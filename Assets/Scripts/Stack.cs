@@ -12,6 +12,7 @@ public class Stack: MonoBehaviour
     StackRequirement[] requirements;
     StackRequirementType[] rules;
     GameController gameController;
+    PoppedBoxModel lastRemovedBox;
 
     Dictionary<StackRequirementType, int> requirementsMet = new Dictionary<StackRequirementType, int>() {
         [StackRequirementType.tall] = 0,
@@ -79,6 +80,13 @@ public class Stack: MonoBehaviour
     }
 
     public void RemoveBox(Box box) {
+        lastRemovedBox = new PoppedBoxModel(
+            box.transform.position, 
+            box.color, 
+            box.shape, 
+            box.transform.localScale, 
+            boxes.IndexOf(box)
+        );
         boxes.Remove(box);
         switch (box.shape)
         {
@@ -228,6 +236,24 @@ public class Stack: MonoBehaviour
         }
         return box;
     }
+
+    public void Undo() {
+        var boxHeight = (0.69f * 2) * lastRemovedBox.scale.y;
+        if (lastRemovedBox.index < boxes.Count) {
+            for (int i = lastRemovedBox.index; i < boxes.Count; i++)
+            {
+                boxes[i].transform.position = new Vector2(boxes[i].transform.position.x, boxes[i].transform.position.y + boxHeight + 0.2f);
+            }
+        }
+        Box box = Instantiate(boxPrefab, new Vector2(-100, -100), Quaternion.identity).GetComponent<Box>();
+        Vector2 lowerPosition = new Vector2(lastRemovedBox.position.x, lastRemovedBox.position.y + 0.1f);
+        box.stack = this;
+        box.color = lastRemovedBox.color;
+        box.shape = lastRemovedBox.shape;
+        box.transform.localScale = lastRemovedBox.scale;
+        boxes.Insert(lastRemovedBox.index, box);
+        box.transform.position = lowerPosition;
+    }
 }
 
 public enum StackRequirementType {
@@ -241,5 +267,21 @@ public struct StackRequirement {
     public StackRequirement(StackRequirementType _type, int _count) {
         type = _type;
         count = _count;
+    }
+}
+
+public struct PoppedBoxModel {
+    public Vector2 position;
+    public BoxColor color;
+    public BoxShape shape;
+    public Vector2 scale;
+    public int index;
+
+    public PoppedBoxModel(Vector2 position, BoxColor color, BoxShape shape, Vector2 scale, int index) {
+        this.position = position;
+        this.color = color;
+        this.shape = shape;
+        this.scale = scale;
+        this.index = index;
     }
 }
