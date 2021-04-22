@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Text.RegularExpressions;
 
 public class AutoText : MonoBehaviour
 {
@@ -32,13 +33,13 @@ public class AutoText : MonoBehaviour
 
     IEnumerator StartTyping()
     {
-	    foreach (char c in text)
+        // string[] words = Regex.Split(text, @"\W|_");
+        string[] words = Regex.Split(text, @" ");
+	    foreach (string word in words)
 	    {
-		    // if (PlayerPrefs.GetInt("muted", 0) == 0 && c != ' ') {
-			//     audio.Play();
-		    // }
-		    textMesh.text += c;
-		    yield return new WaitForSeconds (0.02f);
+		    textMesh.text += word;
+            textMesh.text += " ";
+		    yield return new WaitForSeconds (0.1f);
 	    }
 	    doneFun();
     }

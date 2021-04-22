@@ -93,7 +93,7 @@ public class GameController : MonoBehaviour
     }
 
     void StartTutorial() {
-        tutorialAutoText.TypeText("HEY YOU. Yeah, you with the face. Wanna make some dough? I've got some stacks of boxes here that I need taken care of. They're too tall and I'll pay you to sort them out a bit.", NoOp);
+        tutorialAutoText.TypeText("<color=#FF0000>HEY</color> <color=#FF0000>YOU</color>. Yeah, you with the face. Wanna make some dough? I've got some stacks of boxes here that I need taken care of. They're too tall and I'll pay you to sort them out a bit.", NoOp);
     }
 
     IEnumerator PlaceBoxes(List<Box> boxes)
@@ -269,7 +269,6 @@ public class GameController : MonoBehaviour
         var text = Instantiate(brokenRuleTextPrefab);
         brokenRuleTextList.Add(text);
         brokenRuleBoxTops.Add(boxTop);
-        // Invoke("AddBrokenRuleText", 0.1f);
         AddBrokenRuleText();
     }
 
@@ -468,7 +467,7 @@ public class GameController : MonoBehaviour
             doneButton.SetActive(false);
         } else if (tutorialStep == 2) {
         } else if (tutorialStep == 3) {
-            tutorialAutoText.TypeText("I'm going to give you a set of Requirements to meet and a set of Rules to follow. You'll earn $5 for each requirement met, but I'll dock you $2 for each one over the requirement, and dock you $5 if you go too low. I'll also dock you $5 for each rule broken.", NoOp);
+            tutorialAutoText.TypeText("I'm going to give you a set of Requirements to meet and a set of Rules to follow. You'll earn <color=#00CC01>$5</color> for each requirement met, but I'll dock you <color=#FF0000>$2</color> for each one over the requirement, and dock you <color=#FF0000>$5</color> if you go too low. I'll also dock you <color=#FF0000>$5</color> for each rule broken.", NoOp);
             doneButtonText.text = "Go";
         } else if (tutorialStep == 4) {
             doneButtonText.text = "Done";
@@ -549,7 +548,7 @@ public class GameController : MonoBehaviour
     public void BoxRemoved() {
         boxesRemoved++;
         if (boxesRemoved == 3 && tutorialStep == 2) {
-            tutorialAutoText.TypeText("Ok, THAT'S ENOUGH. You're costing me money. I've got some special requirements for these stacks and I want you to follow what I say exactly.", NoOp);
+            tutorialAutoText.TypeText("Ok, <color=#FF0000>THAT'S</color> <color=#FF0000>ENOUGH</color>. You're costing me money. I've got some special requirements for these stacks and I want you to follow what I say exactly.", NoOp);
             doneButton.SetActive(true);
             tutorialStep++;
         }
