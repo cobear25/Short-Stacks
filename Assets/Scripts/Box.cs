@@ -11,6 +11,9 @@ public class Box : MonoBehaviour
     public Rigidbody2D rigidbody2d;
     public Transform boxTop;
     public AudioSource audio;
+    public AudioSource boxAudio;
+
+    bool boxSoundEnabled = true;
 
     private BoxColor _color;
     public BoxColor color {
@@ -136,7 +139,24 @@ public class Box : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
+        float impulse = 0F;
+
+        foreach (ContactPoint2D point in col.contacts)
+        {
+            impulse += point.normalImpulse;
+        }
+        Debug.Log(impulse);
+        if (impulse > 20 && boxSoundEnabled) {
+            boxAudio.volume = Mathf.Min(impulse / 150f, 1f);
+            boxAudio.Play();
+            boxSoundEnabled = false;
+            Invoke("EnableBoxSound", 0.3f);
+        }
         stack.CheckRules();
+    }
+
+    void EnableBoxSound() {
+        boxSoundEnabled = true;
     }
 }
 

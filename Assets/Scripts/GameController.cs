@@ -16,6 +16,7 @@ public class GameController : MonoBehaviour
     public TextMeshProUGUI totalMoneyText;
     public TextMeshProUGUI plusMoneyText;
     public TextMeshProUGUI minusMoneyText;
+    public TextMeshProUGUI stackNumberText;
 
     public GameObject skipTutorialButton;
     public TextMeshPro tutorialText;
@@ -398,12 +399,18 @@ public class GameController : MonoBehaviour
     }
 
     public void NextStack() {
+        if (stackNumber <= 5) {
+            stackNumberText.text = $"{stackNumber}/5";
+        } else {
+            stackNumberText.text = "";
+        }
         totalMoney += plusMoney;
         totalMoney -= minusMoney;
         ClearBrokenRules();
         var oldBoxList = new List<Box>(boxList);
         foreach (var box in oldBoxList)
         {
+            box.audio.volume = 0.5f;
             box.Pop();
         }
         currentStack = new Stack(boxPrefab, stackSize, boxColors, this);

@@ -39,6 +39,7 @@ public class AutoText : MonoBehaviour
 	    {
 		    textMesh.text += word;
             textMesh.text += " ";
+            audio.Play();
 		    yield return new WaitForSeconds (0.1f);
 	    }
 	    doneFun();
