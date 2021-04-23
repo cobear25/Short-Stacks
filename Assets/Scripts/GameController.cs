@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour
     public GameObject brokenRuleTextPrefab;
     public Color[] boxColors;
     public Color[] boxColors2;
+    public Color[] ruleColors;
 
     public TextMeshProUGUI totalMoneyText;
     public TextMeshProUGUI plusMoneyText;
@@ -21,6 +22,7 @@ public class GameController : MonoBehaviour
     public GameObject doneButton;
     public GameObject undoButton;
     public GameObject stackText;
+    public GameObject perfectStackText;
     public TextMeshPro req1Text;
     public TextMeshPro req2Text;
     public TextMeshPro req3Text;
@@ -89,7 +91,12 @@ public class GameController : MonoBehaviour
         Application.targetFrameRate = 60;
         currentStack = new Stack(boxPrefab, 1, boxColors, this);
         tutorialAutoText = tutorialText.GetComponent<AutoText>();
-        Invoke("StartTutorial", 1);
+        if (PlayerPrefs.GetInt("HasSeenTutorial", 0) == 1) {
+            skipTutorialButton.SetActive(false);
+            Invoke("SkipTutorial", 0.4f);
+        } else {
+            Invoke("StartTutorial", 1);
+        }
     }
 
     void StartTutorial() {
@@ -129,6 +136,16 @@ public class GameController : MonoBehaviour
         }
         if (stackNumber < 1) {
             totalMoneyText.text = "";
+        }
+        Invoke("ShowPerfectStackText", 0.2f);
+    }
+
+    void ShowPerfectStackText() {
+        perfectStackText.SetActive(false);
+        if (stackNumber > 0 && stackNumber < 6) {
+            if (minusMoney <= 0) {
+                perfectStackText.SetActive(true);
+            }
         }
     }
 
@@ -224,11 +241,15 @@ public class GameController : MonoBehaviour
         }
     }
 
+    Color ColorForRuleNumber(int number) {
+        return ruleColors[number];
+    }
+
     void RuleBroken(int ruleNumber, bool isBroken) {
         switch (ruleNumber) {
             case 0:
                 if (isBroken) {
-                    rule1Text.color = Color.red;
+                    rule1Text.color = ColorForRuleNumber(ruleNumber);
                     ruleCheck1.SetActive(false);
                 } else {
                     rule1Text.color = Color.black;
@@ -237,7 +258,7 @@ public class GameController : MonoBehaviour
                 break;
             case 1:
                 if (isBroken) {
-                    rule2Text.color = Color.red;
+                    rule2Text.color = ColorForRuleNumber(ruleNumber);
                     ruleCheck2.SetActive(false);
                 } else {
                     rule2Text.color = Color.black;
@@ -246,7 +267,7 @@ public class GameController : MonoBehaviour
                 break;
             case 2:
                 if (isBroken) {
-                    rule3Text.color = Color.red;
+                    rule3Text.color = ColorForRuleNumber(ruleNumber);
                     ruleCheck3.SetActive(false);
                 } else {
                     rule3Text.color = Color.black;
@@ -255,7 +276,7 @@ public class GameController : MonoBehaviour
                 break;
             case 3:
                 if (isBroken) {
-                    rule4Text.color = Color.red;
+                    rule4Text.color = ColorForRuleNumber(ruleNumber);
                     ruleCheck4.SetActive(false);
                 } else {
                     rule4Text.color = Color.black;
@@ -265,10 +286,11 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void BrokenRuleAt(Transform boxTop) {
+    public void BrokenRuleAt(Transform boxTop, int ruleNumber) {
         var text = Instantiate(brokenRuleTextPrefab);
         brokenRuleTextList.Add(text);
         brokenRuleBoxTops.Add(boxTop);
+        text.GetComponent<TextMeshPro>().color = ColorForRuleNumber(ruleNumber);
         AddBrokenRuleText();
     }
 
@@ -467,14 +489,17 @@ public class GameController : MonoBehaviour
             doneButton.SetActive(false);
         } else if (tutorialStep == 2) {
         } else if (tutorialStep == 3) {
-            tutorialAutoText.TypeText("I'm going to give you a set of Requirements to meet and a set of Rules to follow. You'll earn <color=#00CC01>$5</color> for each requirement met, but I'll dock you <color=#FF0000>$2</color> for each one over the requirement, and dock you <color=#FF0000>$5</color> if you go too low. I'll also dock you <color=#FF0000>$5</color> for each rule broken.", NoOp);
-            doneButtonText.text = "Go";
+            tutorialAutoText.TypeText("I'm going to give you a set of Requirements to meet and a set of Rules to follow. You'll earn <color=#00CC01>$5</color> for each requirement met, but I'll dock you <color=#FF0000>$2</color> for each one over the requirement, and <color=#FF0000>$5</color> if you go too low.", NoOp);
         } else if (tutorialStep == 4) {
+            tutorialAutoText.TypeText("I'll also dock you <color=#FF0000>$5</color> for each rule broken. So <color=#FF0000>DON'T</color> <color=#FF0000>BREAK</color> <color=#FF0000>THE</color> <color=#FF0000>RULES</color>", NoOp);
+            doneButtonText.text = "Go";
+        } else if (tutorialStep == 5) {
             doneButtonText.text = "Done";
             stackNumber = 1;
             stackText.SetActive(true);
             tutorialText.gameObject.SetActive(false);
             skipTutorialButton.SetActive(false);
+            PlayerPrefs.SetInt("HasSeenTutorial", 1);
             UpdateMoneyText();
             NextStack();
         }
@@ -541,6 +566,7 @@ public class GameController : MonoBehaviour
         stackText.SetActive(true);
         tutorialText.gameObject.SetActive(false);
         skipTutorialButton.SetActive(false);
+        PlayerPrefs.SetInt("HasSeenTutorial", 1);
         UpdateMoneyText();
         NextStack();
     }

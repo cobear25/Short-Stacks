@@ -188,7 +188,7 @@ public class Stack: MonoBehaviour
             {
                 var rule = rules[j]; 
                 if (box.HasRequirementType(rule) && boxes[i + 1].HasRequirementType(rule)) {
-                    gameController.BrokenRuleAt(box.boxTop);
+                    gameController.BrokenRuleAt(box.boxTop, j);
                     rulesBroken[j] = 1;
                     brokenCount++;
                     break;
@@ -253,6 +253,7 @@ public class Stack: MonoBehaviour
         box.transform.localScale = lastRemovedBox.scale;
         boxes.Insert(lastRemovedBox.index, box);
         box.transform.position = lowerPosition;
+        MeetsRequirements(requirements);
     }
 }
 
