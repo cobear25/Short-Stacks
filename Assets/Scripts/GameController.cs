@@ -18,6 +18,8 @@ public class GameController : MonoBehaviour
     public TextMeshProUGUI minusMoneyText;
     public TextMeshProUGUI stackNumberText;
 
+    public TMP_InputField nameInputField;
+    public GameObject submitScoreButton;
     public GameObject skipTutorialButton;
     public TextMeshPro tutorialText;
     public GameObject doneButton;
@@ -97,6 +99,28 @@ public class GameController : MonoBehaviour
             Invoke("SkipTutorial", 0.4f);
         } else {
             Invoke("StartTutorial", 1);
+        }
+    }
+
+    IEnumerator PostScore(string name)
+    {
+        // WWWForm form = new WWWForm();
+        // form.AddField("entry.1064445353", email);
+
+        // byte[] rawData = form.data;
+        string url = $"https://docs.google.com/forms/d/e/1FAIpQLSeCVTaOh5_3wXHAFn2W3hXbu7u-jGHW4mnIL-bUA-6forWh-g/formResponse?usp=pp_url&entry.667450614={name}&entry.1968299244={totalMoney}&submit=Submit";
+
+        // Post a request to an URL with our custom headers
+        WWW www = new WWW(url);
+        yield return www;
+    }
+
+    public void SubmitScore() {
+        if (nameInputField.text.Trim().Length > 0) {
+            StartCoroutine(PostScore(nameInputField.text));
+            Application.OpenURL("https://docs.google.com/spreadsheets/d/1lc8onYRVQcenb26To_f38-VuIVm2_BkIv7QGuxwO8Vs/edit#gid=0");
+            nameInputField.gameObject.SetActive(false);
+            submitScoreButton.SetActive(false);
         }
     }
 
@@ -559,9 +583,13 @@ public class GameController : MonoBehaviour
                 stackNumber++;
                 gameOverText.SetActive(true);
                 NextStack();
+                nameInputField.gameObject.SetActive(true);
+                submitScoreButton.SetActive(true);
+                nameInputField.text = PlayerPrefs.GetString("Username", "");
                 break;
             case 6:
                 // new game
+                PlayerPrefs.SetString("Username", nameInputField.text);
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
                 break;
         }
