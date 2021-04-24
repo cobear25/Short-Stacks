@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using TMPro;
 
@@ -104,21 +105,20 @@ public class GameController : MonoBehaviour
 
     IEnumerator PostScore(string name)
     {
-        // WWWForm form = new WWWForm();
-        // form.AddField("entry.1064445353", email);
-
-        // byte[] rawData = form.data;
         string url = $"https://docs.google.com/forms/d/e/1FAIpQLSeCVTaOh5_3wXHAFn2W3hXbu7u-jGHW4mnIL-bUA-6forWh-g/formResponse?usp=pp_url&entry.667450614={name}&entry.1968299244={totalMoney}&submit=Submit";
 
-        // Post a request to an URL with our custom headers
-        WWW www = new WWW(url);
-        yield return www;
+        UnityWebRequest www = UnityWebRequest.Post(url, "");
+        yield return www.SendWebRequest();
     }
 
     public void SubmitScore() {
         if (nameInputField.text.Trim().Length > 0) {
             StartCoroutine(PostScore(nameInputField.text));
+            #if UNITY_EDITOR
             Application.OpenURL("https://docs.google.com/spreadsheets/d/1lc8onYRVQcenb26To_f38-VuIVm2_BkIv7QGuxwO8Vs/edit#gid=0");
+            #else
+            Application.ExternalEval("window.open('https://docs.google.com/spreadsheets/d/1lc8onYRVQcenb26To_f38-VuIVm2_BkIv7QGuxwO8Vs/edit#gid=0',\'_blank\')");
+            #endif
             nameInputField.gameObject.SetActive(false);
             submitScoreButton.SetActive(false);
         }

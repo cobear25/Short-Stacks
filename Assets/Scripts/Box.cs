@@ -145,7 +145,6 @@ public class Box : MonoBehaviour
         {
             impulse += point.normalImpulse;
         }
-        Debug.Log(impulse);
         if (impulse > 20 && boxSoundEnabled) {
             boxAudio.volume = Mathf.Min(impulse / 150f, 1f);
             boxAudio.Play();
